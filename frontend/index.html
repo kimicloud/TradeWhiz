@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeWhiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
+                    <h1 class="text-3xl font-bold text-gray-900">TradeWhiz</h1>
+                </div>
+                <div class="text-sm text-gray-500">
+                    Moving Average Crossover Strategy
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Info Card -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex items-center space-x-3 mb-4">
+                <i class="fas fa-info-circle text-indigo-600 text-xl"></i>
+                <h2 class="text-xl font-semibold text-gray-900">How It Works</h2>
+            </div>
+            <p class="text-gray-600 leading-relaxed">
+                This simulator tests a moving average crossover strategy. When the shorter MA crosses above the longer MA, 
+                it generates a <span class="text-green-600 font-semibold">BUY</span> signal. When it crosses below, 
+                it generates a <span class="text-red-600 font-semibold">SELL</span> signal. The strategy assumes you 
+                buy/sell the entire position at each signal.
+            </p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="bg-white rounded-xl shadow-md p-8">
+            <form id="simulationForm" class="space-y-6">
+                <!-- Stock Symbol -->
+                <div>
+                    <label for="symbol" class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-building text-indigo-600"></i>
+                        <span>Stock Symbol</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="symbol" 
+                        name="symbol" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        placeholder="e.g., TCS.NS, AAPL, MSFT"
+                        required
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Use Yahoo Finance symbols (e.g., TCS.NS for Indian stocks)</p>
+                </div>
+
+                <!-- Date Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="startDate" class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-indigo-600"></i>
+                            <span>Start Date</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="startDate" 
+                            name="startDate" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label for="endDate" class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-indigo-600"></i>
+                            <span>End Date</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="endDate" 
+                            name="endDate" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Moving Average Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="ma1" class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-chart-line text-indigo-600"></i>
+                            <span>Short MA (days)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="ma1" 
+                            name="ma1" 
+                            min="1" 
+                            max="200"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            placeholder="e.g., 10"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label for="ma2" class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-chart-line text-indigo-600"></i>
+                            <span>Long MA (days)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="ma2" 
+                            name="ma2" 
+                            min="2" 
+                            max="500"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            placeholder="e.g., 50"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-center pt-4">
+                    <button 
+                        type="submit" 
+                        id="simulateBtn"
+                        class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    >
+                        <i class="fas fa-play mr-2"></i>
+                        Run Simulation
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 flex items-center space-x-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <div class="text-lg font-medium text-gray-900">Running simulation...</div>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div id="errorAlert" class="hidden mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                <div>
+                    <h3 class="text-sm font-medium text-red-800">Simulation Error</h3>
+                    <p id="errorMessage" class="text-sm text-red-700 mt-1"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-500 text-sm">
+                <p>Built with FastAPI, Tailwind CSS, and Plotly.js</p>
+
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/script.js"></script>
+
+</body>
+</html>

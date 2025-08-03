@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Results - Trading Strategy Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
+                    <h1 class="text-3xl font-bold text-gray-900">Simulation Results</h1>
+                </div>
+                <a href="/" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    New Simulation
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Strategy Info -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900" id="strategyTitle">Loading...</h2>
+                    <p class="text-gray-600 mt-1" id="strategyPeriod">Loading...</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Strategy</div>
+                    <div class="text-lg font-semibold text-indigo-600" id="strategyMA">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Return -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Return</p>
+                        <p class="text-2xl font-bold" id="totalReturn">-</p>
+                    </div>
+                    <div class="p-3 bg-green-100 rounded-full">
+                        <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <span>Buy & Hold: </span><span id="buyHoldReturn" class="font-medium">-</span>
+                </div>
+            </div>
+
+            <!-- Sharpe Ratio -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Sharpe Ratio</p>
+                        <p class="text-2xl font-bold text-blue-600" id="sharpeRatio">-</p>
+                    </div>
+                    <div class="p-3 bg-blue-100 rounded-full">
+                        <i class="fas fa-chart-bar text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    Risk-adjusted return
+                </div>
+            </div>
+
+            <!-- Max Drawdown -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Max Drawdown</p>
+                        <p class="text-2xl font-bold text-red-600" id="maxDrawdown">-</p>
+                    </div>
+                    <div class="p-3 bg-red-100 rounded-full">
+                        <i class="fas fa-arrow-down text-red-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    Largest peak-to-trough decline
+                </div>
+            </div>
+
+            <!-- Win Rate -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Win Rate</p>
+                        <p class="text-2xl font-bold text-purple-600" id="winRate">-</p>
+                    </div>
+                    <div class="p-3 bg-purple-100 rounded-full">
+                        <i class="fas fa-trophy text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-gray-500">
+                    <span>Total Trades: </span><span id="totalTrades" class="font-medium">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Chart -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-gray-900">Price Chart with Signals</h3>
+                <div class="flex items-center space-x-4 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 border-2 border-blue-500"></div>
+                        <span class="text-gray-600">Price</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-orange-500 rounded"></div>
+                        <span class="text-gray-600">Short MA</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded"></div>
+                        <span class="text-gray-600">Long MA</span>
+                    </div>
+                </div>
+            </div>
+            <div id="priceChart" class="w-full h-96"></div>
+        </div>
+
+        <!-- Trade History -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Trade History</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Short MA</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Long MA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradeHistory" class="bg-white divide-y divide-gray-200">
+                        <!-- Trade rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div class="text-lg font-medium text-gray-900">Loading results...</div>
+        </div>
+    </div>
+
+    <!-- Error Alert -->
+    <div id="errorAlert" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl mr-3"></i>
+                <h3 class="text-lg font-medium text-red-800">Error Loading Results</h3>
+            </div>
+            <p id="errorMessage" class="text-red-700 mb-4"></p>
+            <div class="flex justify-end space-x-3">
+                <button onclick="window.location.href='/'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors duration-200">
+                    Go Back
+                </button>
+                <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-500 text-sm">
+                <p>Built with FastAPI, Tailwind CSS, and Plotly.js</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Get simulation results from sessionStorage or URL params
+        function getSimulationData() {
+            // Try to get from sessionStorage first
+            const storedData = sessionStorage.getItem('simulationResults');
+            if (storedData) {
+                return JSON.parse(storedData);
+            }
+            
+            // If no stored data, redirect to home
+            window.location.href = '/';
+            return null;
+        }
+
+        function displayResults(data) {
+            // Update strategy info
+            document.getElementById('strategyTitle').textContent = data.symbol;
+            document.getElementById('strategyPeriod').textContent = data.period;
+            document.getElementById('strategyMA').textContent = data.ma_windows;
+
+            // Update metrics
+            const metrics = data.metrics;
+            document.getElementById('totalReturn').textContent = `${metrics.total_return}%`;
+            document.getElementById('buyHoldReturn').textContent = `${metrics.buy_hold_return}%`;
+            document.getElementById('sharpeRatio').textContent = metrics.sharpe_ratio;
+            document.getElementById('maxDrawdown').textContent = `${metrics.max_drawdown}%`;
+            document.getElementById('winRate').textContent = `${metrics.win_rate}%`;
+            document.getElementById('totalTrades').textContent = metrics.total_trades;
+
+            // Color code the total return
+            const totalReturnElement = document.getElementById('totalReturn');
+            if (metrics.total_return > 0) {
+                totalReturnElement.classList.add('text-green-600');
+            } else if (metrics.total_return < 0) {
+                totalReturnElement.classList.add('text-red-600');
+            } else {
+                totalReturnElement.classList.add('text-gray-600');
+            }
+
+            // Create price chart
+            createPriceChart(data.chart_data, data.trades);
+
+            // Display trade history
+            displayTradeHistory(data.trades);
+
+            // Hide loading indicator
+            document.getElementById('loadingIndicator').classList.add('hidden');
+        }
+
+        function createPriceChart(chartData, trades) {
+            // Prepare buy/sell signals
+            const buySignals = trades.filter(t => t.type === 'buy');
+            const sellSignals = trades.filter(t => t.type === 'sell');
+
+            const traces = [
+                // Price line
+                {
+                    x: chartData.dates,
+                    y: chartData.prices,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Price',
+                    line: { color: '#3B82F6', width: 2 }
+                },
+                // Short MA
+                {
+                    x: chartData.dates,
+                    y: chartData.ma1,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Short MA',
+                    line: { color: '#F97316', width: 1.5 }
+                },
+                // Long MA
+                {
+                    x: chartData.dates,
+                    y: chartData.ma2,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Long MA',
+                    line: { color: '#EF4444', width: 1.5 }
+                },
+                // Buy signals
+                {
+                    x: buySignals.map(s => s.date),
+                    y: buySignals.map(s => s.price),
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Buy',
+                    marker: {
+                        color: '#10B981',
+                        size: 10,
+                        symbol: 'triangle-up'
+                    }
+                },
+                // Sell signals
+                {
+                    x: sellSignals.map(s => s.date),
+                    y: sellSignals.map(s => s.price),
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Sell',
+                    marker: {
+                        color: '#EF4444',
+                        size: 10,
+                        symbol: 'triangle-down'
+                    }
+                }
+            ];
+
+            const layout = {
+                title: '',
+                xaxis: { 
+                    title: 'Date',
+                    type: 'date'
+                },
+                yaxis: { 
+                    title: 'Price' 
+                },
+                showlegend: true,
+                legend: {
+                    orientation: 'h',
+                    y: -0.2
+                },
+                margin: { t: 20, b: 60 },
+                hovermode: 'x unified'
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d']
+            };
+
+            Plotly.newPlot('priceChart', traces, layout, config);
+        }
+
+        function displayTradeHistory(trades) {
+            const tbody = document.getElementById('tradeHistory');
+            tbody.innerHTML = '';
+
+            if (trades.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No trades executed</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            trades.forEach(trade => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const actionClass = trade.type === 'buy' ? 'text-green-600' : 'text-red-600';
+                const actionIcon = trade.type === 'buy' ? 'fa-arrow-up' : 'fa-arrow-down';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${trade.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ${actionClass}">
+                        <i class="fas ${actionIcon} mr-2"></i>
+                        ${trade.type.toUpperCase()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.price}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.ma1}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.ma2}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('loadingIndicator').classList.add('hidden');
+            document.getElementById('errorAlert').classList.remove('hidden');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            const simulationData = getSimulationData();
+            
+            if (simulationData) {
+                if (simulationData.success) {
+                    displayResults(simulationData.data);
+                } else {
+                    showError(simulationData.error || 'Unknown error occurred');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
