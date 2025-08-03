@@ -5,6 +5,26 @@ const loadingIndicator = document.getElementById('loadingIndicator');
 const errorAlert = document.getElementById('errorAlert');
 const errorMessage = document.getElementById('errorMessage');
 
+// Backend URL configuration
+function getBackendUrl() {
+    // Check if we're running locally
+    const isLocal = window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1' ||
+                   window.location.hostname === '';
+    
+    if (isLocal) {
+        // Check if we're running on the backend server (port 8000)
+        if (window.location.port === '8000') {
+            return '';  // Same origin, no need to specify URL
+        } else {
+            return 'http://localhost:8000';
+        }
+    } else {
+        // Replace with your actual Render backend URL
+        return 'https://tradewhiz-backend.onrender.com';
+    }
+}
+
 // Set default dates
 function setDefaultDates() {
     const endDate = new Date();
@@ -94,23 +114,52 @@ function hideLoading() {
     loadingIndicator.classList.add('hidden');
 }
 
+// Test backend connection
+async function testBackendConnection() {
+    const backendUrl = getBackendUrl();
+    try {
+        const response = await fetch(`${backendUrl}/test`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Backend connection successful:', data);
+            return true;
+        } else {
+            console.warn('Backend connection failed:', response.status);
+            return false;
+        }
+    } catch (error) {
+        console.error('Backend connection error:', error);
+        return false;
+    }
+}
+
 // Make API request
 async function runSimulation(formData) {
+    const backendUrl = getBackendUrl();
+    
     try {
-        const isLocal = window.location.hostname === 'localhost';
-const BASE_URL = isLocal ? 'http://localhost:8000' : 'https://tradewhiz-backend.onrender.com';
-
-const response = await fetch(`${BASE_URL}/simulate`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData)
-});
-
+        const response = await fetch(`${backendUrl}/simulate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.status === 0 || response.status >= 500) {
+                throw new Error('Backend server is not responding. Please try again later.');
+            } else if (response.status === 404) {
+                throw new Error('Backend endpoint not found. Please check the server configuration.');
+            } else {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
         }
         
         const result = await response.json();
@@ -118,7 +167,12 @@ const response = await fetch(`${BASE_URL}/simulate`, {
         
     } catch (error) {
         console.error('API request failed:', error);
-        throw new Error(`Failed to connect to the server: ${error.message}`);
+        
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error('Cannot connect to backend server. Please check if the server is running.');
+        } else {
+            throw new Error(error.message || 'Failed to connect to the server');
+        }
     }
 }
 
@@ -246,9 +300,19 @@ function addKeyboardShortcuts() {
 }
 
 // Initialize the application
-function init() {
+async function init() {
     // Set default values
     setDefaults();
+    
+    // Test backend connection
+    console.log('Testing backend connection...');
+    const backendUrl = getBackendUrl();
+    console.log('Backend URL:', backendUrl);
+    
+    const connectionOk = await testBackendConnection();
+    if (!connectionOk) {
+        showError('Warning: Cannot connect to backend server. Please check your connection.');
+    }
     
     // Add event listeners
     form.addEventListener('submit', handleSubmit);

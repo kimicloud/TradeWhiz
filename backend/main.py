@@ -7,19 +7,36 @@ from datetime import datetime
 import os
 from strategy import TradingStrategy
 
-app = FastAPI(title="Trading Strategy Simulator", version="1.0.0")
+app = FastAPI(title="Trading Strategy Simulator API", version="1.0.0")
+
+# Check if we're in production (Render) or development
+IS_PRODUCTION = os.getenv("RENDER") is not None
 
 # CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Mount static files
-app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+if IS_PRODUCTION:
+    # Production CORS - only allow your deployed frontend
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "https:tradewhizz.vercel.app",  # Replace with your actual Vercel URL
+        ],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["*"],
+    )
+else:
+    # Development CORS - allow localhost
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Allow all origins in development
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
+    # Only mount static files in development if frontend directory exists
+    if os.path.exists("frontend"):
+        app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 class SimulationRequest(BaseModel):
     symbol: str
@@ -35,11 +52,38 @@ class SimulationResponse(BaseModel):
 
 @app.get("/")
 async def root():
-    return FileResponse("frontend/index.html")
+    if IS_PRODUCTION:
+        return {
+            "message": "Trading Strategy Simulator API",
+            "version": "1.0.0",
+            "status": "active",
+            "endpoints": {
+                "simulate": "/simulate",
+                "health": "/health"
+            }
+        }
+    else:
+        # In development, serve the frontend if it exists
+        if os.path.exists("frontend/index.html"):
+            return FileResponse("frontend/index.html")
+        else:
+            return {
+                "message": "Trading Strategy Simulator API - Development Mode",
+                "version": "1.0.0",
+                "status": "active",
+                "note": "Frontend files not found. Please ensure frontend directory exists.",
+                "endpoints": {
+                    "simulate": "/simulate",
+                    "health": "/health"
+                }
+            }
 
 @app.get("/result")
 async def result_page():
-    return FileResponse("frontend/result.html")
+    if not IS_PRODUCTION and os.path.exists("frontend/result.html"):
+        return FileResponse("frontend/result.html")
+    else:
+        return {"error": "Result page not available in API-only mode"}
 
 @app.post("/simulate", response_model=SimulationResponse)
 async def simulate_strategy(request: SimulationRequest):
@@ -79,7 +123,16 @@ async def simulate_strategy(request: SimulationRequest):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "message": "Trading Strategy Simulator API"}
+    return {
+        "status": "healthy", 
+        "message": "Trading Strategy Simulator API",
+        "timestamp": datetime.now().isoformat()
+    }
+
+# Add a test endpoint for CORS verification
+@app.get("/test")
+async def test_connection():
+    return {"message": "Backend connection successful!"}
 
 if __name__ == "__main__":
     import uvicorn
