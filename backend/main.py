@@ -7,18 +7,18 @@ from datetime import datetime
 import os
 from strategy import TradingStrategy
 
-app = FastAPI(title="Trading Strategy Simulator API", version="1.0.0")
+app = FastAPI(title="Trading Strategy Simulator", version="1.0.0")
 
 # Check if we're in production (Render) or development
 IS_PRODUCTION = os.getenv("RENDER") is not None
 
 # CORS middleware
 if IS_PRODUCTION:
-    # Production CORS - only allow your deployed frontend
+    # Production CORS - allow your Vercel frontend
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            "https:tradewhizz.vercel.app",  # Replace with your actual Vercel URL
+            "https://tradewhizz.vercel.app",  # Your actual Vercel URL
         ],
         allow_credentials=True,
         allow_methods=["GET", "POST", "OPTIONS"],
@@ -33,10 +33,10 @@ else:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
-    # Only mount static files in development if frontend directory exists
-    if os.path.exists("frontend"):
-        app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+# Mount static files only in development
+if not IS_PRODUCTION and os.path.exists("frontend"):
+    app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 class SimulationRequest(BaseModel):
     symbol: str
@@ -71,7 +71,6 @@ async def root():
                 "message": "Trading Strategy Simulator API - Development Mode",
                 "version": "1.0.0",
                 "status": "active",
-                "note": "Frontend files not found. Please ensure frontend directory exists.",
                 "endpoints": {
                     "simulate": "/simulate",
                     "health": "/health"
@@ -126,13 +125,19 @@ async def health_check():
     return {
         "status": "healthy", 
         "message": "Trading Strategy Simulator API",
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+        "cors_enabled": True,
+        "environment": "production" if IS_PRODUCTION else "development"
     }
 
 # Add a test endpoint for CORS verification
 @app.get("/test")
 async def test_connection():
-    return {"message": "Backend connection successful!"}
+    return {
+        "message": "Backend connection successful!", 
+        "cors_enabled": True,
+        "environment": "production" if IS_PRODUCTION else "development"
+    }
 
 if __name__ == "__main__":
     import uvicorn
