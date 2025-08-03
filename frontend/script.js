@@ -97,14 +97,18 @@ function hideLoading() {
 // Make API request
 async function runSimulation(formData) {
     try {
-        const response = await fetch('/simulate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
-        
+        const isLocal = window.location.hostname === 'localhost';
+const BASE_URL = isLocal ? 'http://localhost:8000' : 'https://tradewhiz-backend.onrender.com';
+
+const response = await fetch(`${BASE_URL}/simulate`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+});
+
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

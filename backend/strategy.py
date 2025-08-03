@@ -37,9 +37,12 @@ class TradingStrategy:
         
         # Generate signals (1 for buy, -1 for sell, 0 for hold)
         df['Signal'] = 0
-        df['Signal'][self.ma1_window:] = np.where(
-            df[f'MA{self.ma1_window}'][self.ma1_window:] > df[f'MA{self.ma2_window}'][self.ma1_window:], 1, -1
-        )
+        mask = df.index[self.ma1_window:]
+        df.loc[mask, 'Signal'] = np.where(
+    df.loc[mask, f'MA{self.ma1_window}'] > df.loc[mask, f'MA{self.ma2_window}'], 1, -1
+)
+
+
         
         # Find crossover points
         df['Position'] = df['Signal'].diff()
