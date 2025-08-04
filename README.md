@@ -8,6 +8,8 @@ https://tradewhizz.vercel.app
 
 
 🧠 Features
+
+
 🔎 Search stocks by symbol (e.g., TCS.NS, AAPL, INFY.NS)
 📆 Choose date range
 🔢 Input two moving average windows (e.g., 10, 50)
@@ -45,6 +47,8 @@ uvicorn backend.main:app --reload
 
 
 📈 Strategy Explanation
+
+
 Moving Average Crossover involves two lines:
 MA1: Short-term (e.g., 10-day)
 MA2: Long-term (e.g., 50-day)
@@ -57,4 +61,5 @@ MA2: Long-term (e.g., 50-day)
 | Max Drawdown | Maximum observed loss from a peak |
 | Win Rate     | % of profitable trades            |
 | Total Return | Cumulative return from strategy   |
+
 
