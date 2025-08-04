@@ -17,7 +17,7 @@
                     <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
                     <h1 class="text-3xl font-bold text-gray-900">Simulation Results</h1>
                 </div>
-                <a href="/" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                <a href="./index.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
                     <i class="fas fa-arrow-left mr-2"></i>
                     New Simulation
                 </a>
@@ -169,7 +169,7 @@
             </div>
             <p id="errorMessage" class="text-red-700 mb-4"></p>
             <div class="flex justify-end space-x-3">
-                <button onclick="window.location.href='/'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors duration-200">
+                <button onclick="window.location.href='./index.html'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition-colors duration-200">
                     Go Back
                 </button>
                 <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
@@ -189,16 +189,16 @@
     </footer>
 
     <script>
-        // Get simulation results from sessionStorage or URL params
+        // Get simulation results from localStorage
         function getSimulationData() {
-            // Try to get from sessionStorage first
-            const storedData = sessionStorage.getItem('simulationResults');
+            // Try to get from localStorage first
+            const storedData = localStorage.getItem('simulationResults');
             if (storedData) {
                 return JSON.parse(storedData);
             }
             
             // If no stored data, redirect to home
-            window.location.href = '/';
+            window.location.href = './index.html';
             return null;
         }
 
@@ -351,9 +351,9 @@
                         <i class="fas ${actionIcon} mr-2"></i>
                         ${trade.type.toUpperCase()}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.price}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.ma1}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${trade.ma2}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${trade.price}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${trade.ma1}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${trade.ma2}</td>
                 `;
                 
                 tbody.appendChild(row);
