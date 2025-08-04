@@ -4,6 +4,8 @@ A full-stack web application that simulates a moving average crossover trading s
 🚀 Live Demo
 https://tradewhizz.vercel.app
 
+<img width="1710" height="992" alt="Screenshot 2025-08-04 at 6 39 06 AM" src="https://github.com/user-attachments/assets/62054c66-b2aa-42eb-9e9f-1f4a5c71a8da" />
+
 
 🧠 Features
 🔎 Search stocks by symbol (e.g., TCS.NS, AAPL, INFY.NS)
@@ -55,3 +57,4 @@ MA2: Long-term (e.g., 50-day)
 | Max Drawdown | Maximum observed loss from a peak |
 | Win Rate     | % of profitable trades            |
 | Total Return | Cumulative return from strategy   |
+
