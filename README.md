@@ -34,7 +34,6 @@ Win Rate
 Installation (Local)
 1. Clone the repo
 git clone https://github.com/kimicloud/TradeWhiz.git
-cd trading-simulator
 2. Set up virtual environment
 python3 -m venv venv
 source venv/bin/activate
@@ -61,6 +60,7 @@ MA2: Long-term (e.g., 50-day)
 | Max Drawdown | Maximum observed loss from a peak |
 | Win Rate     | % of profitable trades            |
 | Total Return | Cumulative return from strategy   |
+
 
 
 
